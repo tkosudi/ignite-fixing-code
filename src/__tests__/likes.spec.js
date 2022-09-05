@@ -15,6 +15,8 @@ describe("Likes", () => {
       `/repositories/${repository.body.id}/like`
     );
 
+    console.log('KKKKKKKK', response.body)
+
     expect(response.body).toMatchObject({
       likes: 1
     });

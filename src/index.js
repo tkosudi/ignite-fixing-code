@@ -23,52 +23,54 @@ app.post("/repositories", (request, response) => {
     likes: 0
   };
 
-  return response.json(repository);
+  repositories.push(repository)
+
+  return response.status(201).json(repository);
 });
 
 app.put("/repositories/:id", (request, response) => {
+  delete request.body.likes
   const { id } = request.params;
   const updatedRepository = request.body;
-
-  repositoryIndex = repositories.findindex(repository => repository.id === id);
-
-  if (repositoryIndex < 0) {
+  
+  const repository = repositories.find(repository => repository.id === id);
+  
+  if (!repository) {
     return response.status(404).json({ error: "Repository not found" });
   }
 
-  const repository = { ...repositories[repositoryIndex], ...updatedRepository };
+  const result = Object.assign(repository, updatedRepository)
 
-  repositories[repositoryIndex] = repository;
-
-  return response.json(repository);
+  return response.status(200).json(result);
 });
 
 app.delete("/repositories/:id", (request, response) => {
   const { id } = request.params;
 
-  repositoryIndex = repositories.findIndex(repository => repository.id === id);
+  const repositoryIndex = repositories.findIndex(repository => repository.id === id);
 
-  if (repositoryIndex > 0) {
+  if (repositoryIndex < 0) {
     return response.status(404).json({ error: "Repository not found" });
   }
 
   repositories.splice(repositoryIndex, 1);
 
-  return response.status(204).send();
+  return response.status(204).end()
 });
 
 app.post("/repositories/:id/like", (request, response) => {
   const { id } = request.params;
 
-  repositoryIndex = repositories.findIndex(repository => repository.id === id);
+  const repositoryIndex = repositories.findIndex(repository => repository.id === id);
 
   if (repositoryIndex < 0) {
     return response.status(404).json({ error: "Repository not found" });
   }
 
   const likes = ++repositories[repositoryIndex].likes;
-
-  return response.json('likes');
+  console.log('===============> ', likes)
+  
+  return response.status(200).json({likes: likes});
 });
 
 module.exports = app;
